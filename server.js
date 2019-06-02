@@ -57,9 +57,37 @@ async function onPost(req, res) {
 app.post('/api', jsonParser, onPost);
 
 async function onPatch(req, res) {
+  const result = await sheet.getRows();
+  const rows = result.rows;
+
   const column  = req.params.column;
   const value  = req.params.value;
   const messageBody = req.body;
+
+  const n = rows[0].length;
+  let change_row = -1;
+  for(let i=1;i<rows.length;i++){
+    for(let j=0;j<n;j++){
+      if(column===rows[0][j]&&value===rows[i][j]){
+        change_row=i;
+        break;
+      }
+    }
+    if(change_row!==-1)break;
+  }
+  let change_valueIndex=-1;
+  if(change_row!==-1){
+    let newRow = [];
+    for(let j=0;j<n;j++){
+      newRow[j]=rows[change_row][j];
+      const o = new Object();
+      if(messageBody.hasOwnProperty(rows[0][j])){
+        newRow[j]=messageBody[rows[0][j]];
+      }
+    }
+    sheet.setRow(change_row,newRow);
+  }
+
 
 
   // TODO(you): Implement onPatch.
