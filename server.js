@@ -18,14 +18,15 @@ async function onGet(req, res) {
   const result = await sheet.getRows();
   const rows = result.rows;
   console.log(rows);
-  const keys = rows[0];
   const data = [];
   for(i=1;i<rows.length;i++){
     const tmp={};
-    key1=rows[0][0];
-    key2=rows[0][1];
-    tmp[key1]=rows[i][0];
-    tmp[key2]=rows[i][1];
+    const n = rows[0].length;
+    const key_name = [];
+    for(let j=0;j<n;j++){
+      key_name[j]=rows[0][j];
+      tmp[key_name[j]]=rows[i][j];
+    }
     data.push(tmp);
   }
 
@@ -43,7 +44,13 @@ async function onPost(req, res) {
   // TODO(you): Implement onPost.
   console.log(messageBody);
   const keys = Object.getOwnPropertyNames(messageBody);
-  for(let i=0;i<keys.length;i++)
+  
+  const n = rows[0].length;
+  let add = [];
+  for(let i=0;i<n;i++){
+    add[i]=messageBody[rows[0][i]];
+  }
+  await sheet.appendRow(add);
 
   res.json( { status: 'successed'} );
 }
@@ -68,15 +75,10 @@ async function onDelete(req, res) {
   const value  = req.params.value;
   let delete_row = -1;
   for(let i=0;i<rows.length;i++){
-    if(rows[0][0]===column){
-      if(rows[i][0]===value){
-        delete_row=i;
-        break;
-      }
-    }
-    else{
-      if(rows[i][1]===value){
-        delete_row=i;
+    const n = rows[0].length;
+    for(let j=0;j<n;j++){
+      if(column===rows[0][j]&&value===rows[i][j]){
+        delete_row = i;
         break;
       }
     }
