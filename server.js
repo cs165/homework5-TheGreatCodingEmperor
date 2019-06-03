@@ -45,9 +45,17 @@ async function onPost(req, res) {
   console.log(messageBody);
   
   const n = rows[0].length;
+
+  const keys = Object.keys(messageBody);
+  let new_messageBody = {};
+
+  for(let i=0;i<n;i++){
+    new_messageBody[keys[i].toLowerCase()]=messageBody[keys[i]];
+  }
+
   let add = [];
   for(let i=0;i<n;i++){
-    add[i]=messageBody[rows[0][i]];
+    add[i]=new_messageBody[rows[0][i]];
   }
   await sheet.appendRow(add);
 
@@ -64,11 +72,17 @@ async function onPatch(req, res) {
   const messageBody = req.body;
 
   const n = rows[0].length;
+
+  const keys = Object.keys(messageBody);
+  let new_messageBody = {};
+
+  new_messageBody[keys[0].toLowerCase()]=messageBody[keys[0]];
+
   let change_row = -1;
   for(let i=1;i<rows.length;i++){
     for(let j=0;j<n;j++){
-      if(column.toUpperCase()===rows[0][j].toUpperCase()
-      &&value.toUpperCase()===rows[i][j].toUpperCase()){
+      if(column.toLowerCase()===rows[0][j]
+      &&value.toLowerCase()===rows[i][j].toLowerCase()){
         change_row=i;
         break;
       }
@@ -80,12 +94,12 @@ async function onPatch(req, res) {
     let newRow = [];
     for(let j=0;j<n;j++){
       newRow[j]=rows[change_row][j];
-      const o = new Object();
-      if(messageBody.hasOwnProperty(rows[0][j])){
-        newRow[j]=messageBody[rows[0][j]];
+      console.log(rows[0][j]);
+      if(new_messageBody.hasOwnProperty(rows[0][j])){
+        newRow[j]=new_messageBody[rows[0][j]];
       }
     }
-    sheet.setRow(change_row,newRow);
+    await sheet.setRow(change_row,newRow);
   }
 
 
@@ -105,8 +119,8 @@ async function onDelete(req, res) {
   for(let i=0;i<rows.length;i++){
     const n = rows[0].length;
     for(let j=0;j<n;j++){
-      if(column.toUpperCase()===rows[0][j].toUpperCase()
-      &&value.toUpperCase()===rows[i][j].toUpperCase()){
+      if(column.toLowerCase()===rows[0][j]
+      &&value.toLowerCase()===rows[i][j].toLowerCase()){
         delete_row = i;
         break;
       }
