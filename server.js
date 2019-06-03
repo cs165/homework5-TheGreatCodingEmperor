@@ -42,7 +42,6 @@ async function onPost(req, res) {
 
   const messageBody = req.body;
   // TODO(you): Implement onPost.
-  console.log(messageBody);
   
   const n = rows[0].length;
 
@@ -94,7 +93,6 @@ async function onPatch(req, res) {
     let newRow = [];
     for(let j=0;j<n;j++){
       newRow[j]=rows[change_row][j];
-      console.log(rows[0][j]);
       if(new_messageBody.hasOwnProperty(rows[0][j])){
         newRow[j]=new_messageBody[rows[0][j]];
       }
