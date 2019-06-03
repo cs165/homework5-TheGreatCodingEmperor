@@ -18,11 +18,11 @@ async function onGet(req, res) {
   const result = await sheet.getRows();
   const rows = result.rows;
   console.log(rows);
-  const data = [];
+  let data = [];
   for(i=1;i<rows.length;i++){
-    const tmp={};
+    let tmp={};
     const n = rows[0].length;
-    const key_name = [];
+    let key_name = [];
     for(let j=0;j<n;j++){
       key_name[j]=rows[0][j];
       tmp[key_name[j]]=rows[i][j];
@@ -43,7 +43,6 @@ async function onPost(req, res) {
   const messageBody = req.body;
   // TODO(you): Implement onPost.
   console.log(messageBody);
-  const keys = Object.getOwnPropertyNames(messageBody);
   
   const n = rows[0].length;
   let add = [];
@@ -68,7 +67,8 @@ async function onPatch(req, res) {
   let change_row = -1;
   for(let i=1;i<rows.length;i++){
     for(let j=0;j<n;j++){
-      if(column===rows[0][j]&&value===rows[i][j]){
+      if(column.toUpperCase()===rows[0][j].toUpperCase()
+      &&value.toUpperCase()===rows[i][j].toUpperCase()){
         change_row=i;
         break;
       }
@@ -105,13 +105,14 @@ async function onDelete(req, res) {
   for(let i=0;i<rows.length;i++){
     const n = rows[0].length;
     for(let j=0;j<n;j++){
-      if(column===rows[0][j]&&value===rows[i][j]){
+      if(column.toUpperCase()===rows[0][j].toUpperCase()
+      &&value.toUpperCase()===rows[i][j].toUpperCase()){
         delete_row = i;
         break;
       }
     }
   }
-  if(delete_row!==-1){
+  if(delete_row !== -1){
     await sheet.deleteRow(delete_row);
   }
   
